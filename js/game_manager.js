@@ -94,7 +94,6 @@ GameManager.prototype.actuate = function () {
   // Clear the state when the game is over (game over only, not win)
   if (this.over) {
     this.storageManager.clearGameState();
-    this.stateHistory = [];
   } else {
     var state = this.serialize();
     this.storageManager.setGameState(state);
@@ -298,6 +297,8 @@ GameManager.prototype.undoMove = function() {
     this.keepPlaying = previousState.keepPlaying;
 
     this.actuate();
+    this.keepPlaying = true;
+    this.actuator.continueGame();
   }
 };
 
