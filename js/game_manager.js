@@ -295,12 +295,11 @@ GameManager.prototype.undoMove = function() {
     this.over        = previousState.over;
     this.won         = previousState.won;
     this.keepPlaying = previousState.keepPlaying;
-
+    if (this.over)
+    this.keepPlaying = true;
+    this.actuator.continueGame();
+    this.serialize();
     this.actuate();
-    
-    if (this.over) {
-      this.actuator.clearMessage();
-    }
   }
 };
 
