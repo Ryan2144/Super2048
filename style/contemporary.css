@@ -1901,7 +1901,7 @@ hr {
   .container {
     margin: 0 auto; }
 
-  .score-container, .best-container {
+  .score-container, .best-container, .rank-container {
     margin-top: 0;
     padding: 15px 10px;
     min-width: 40px; }
