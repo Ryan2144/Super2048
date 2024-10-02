@@ -49,6 +49,7 @@ GameManager.prototype.setup = function () {
                                 previousState.grid.cells); // Reload grid
     this.score       = previousState.score;
     this.rankScore   = previousState.rankScore;
+    this.undos       = previousState.undos;
     this.over        = previousState.over;
     this.won         = previousState.won;
     this.keepPlaying = previousState.keepPlaying;
@@ -56,6 +57,7 @@ GameManager.prototype.setup = function () {
     this.grid        = new Grid(this.size);
     this.score       = 0;
     this.rankScore   = 2;
+    this.undos       = 0;
     this.over        = false;
     this.won         = false;
     this.keepPlaying = false;
@@ -103,6 +105,7 @@ GameManager.prototype.actuate = function () {
   this.actuator.actuate(this.grid, {
     score:      this.score,
     rankScore:  this.rankScore,
+    undos:      this.undos,
     over:       this.over,
     won:        this.won,
     bestScore:  this.storageManager.getBestScore(),
@@ -117,6 +120,7 @@ GameManager.prototype.serialize = function () {
     grid:        this.grid.serialize(),
     score:       this.score,
     rankScore:   this.rankScore,
+    undos:       this.undos,
     over:        this.over,
     won:         this.won,
     keepPlaying: this.keepPlaying
@@ -196,6 +200,9 @@ GameManager.prototype.move = function (direction) {
 
   if (moved) {
     this.addRandomTile();
+    if (this.undos < 3) {
+      this.undos++;
+    }
 
     if (!this.movesAvailable()) {
       this.over = true; // Game over!
@@ -283,7 +290,7 @@ GameManager.prototype.tileMatchesAvailable = function () {
 };
 
 GameManager.prototype.undoMove = function() {
-  if (this.stateHistory.length > 1) {
+  if (this.stateHistory.length > 1 && this.undos > 0) {
     // Ignore the current state.
     this.stateHistory.pop();
 
@@ -292,14 +299,19 @@ GameManager.prototype.undoMove = function() {
     this.grid        = new Grid(previousState.grid.size,
                                 previousState.grid.cells); // Reload grid
     this.score       = previousState.score;
+    this.rankScore   = previousState.rankScore;
     this.over        = previousState.over;
     this.won         = previousState.won;
     this.keepPlaying = previousState.keepPlaying;
+    this.undos--;
     if (this.over)
     this.keepPlaying = true;
     this.actuator.continueGame();
     this.serialize();
     this.actuate();
+  }
+  else {
+    alert("You can undo up to 3 previous moves. Make another move if you want to undo!");
   }
 };
 
